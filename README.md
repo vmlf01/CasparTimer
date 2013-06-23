@@ -1,0 +1,4 @@
+CasparTimer
+===========
+
+CasparCG Timer component
