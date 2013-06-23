@@ -89,7 +89,7 @@ package org.computus.model
 			if (time != ms )
 			{
 				time = ms
-trace ( "TICK: " + time + "  " + new Date(time))
+//trace ( "TICK: " + time + "  " + new Date(time))
 
 				// send onChange TimekeeperEvent
 				var o = new TimekeeperEvent( TimekeeperEvent.CHANGE, time )
@@ -116,7 +116,9 @@ trace ( "TICK: " + time + "  " + new Date(time))
 		{
 			regulatorAcc = 0;
 			regulatorCache = getTimer();
-			regulator = new Timer( 50 );	// updates regulator 20 times per second
+			//regulator = new Timer( 50 );	// updates regulator 20 times per second
+			// vmlf: change to 50 times per second to match 50fps
+			regulator = new Timer( 20 );	// updates regulator 50 times per second
 			regulator.addEventListener(TimerEvent.TIMER, onTimerEvent);
 			regulator.start();
 		}
@@ -127,7 +129,7 @@ trace ( "TICK: " + time + "  " + new Date(time))
 			var regulatorDelta = regulatorNew - regulatorCache	// calculate elapsed time since last 'tick'
 			regulatorAcc += regulatorDelta						// increment accumulator
 			
-trace ( "regulator accumulator = " + regulatorAcc )
+//trace ( "regulator accumulator = " + regulatorAcc )
 			
 			if ( regulatorAcc > tickFrequency )					// check for a tick
 			{
