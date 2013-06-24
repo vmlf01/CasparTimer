@@ -1,9 +1,12 @@
 ﻿package  
 {
 	import flash.display.MovieClip;
+	import flash.text.TextField;
 
 	public class TimerDisplay extends MovieClip
 	{
+		public var TimerDisplayField:TextField;
+		
 		public function TimerDisplay() 
 		{
 		}

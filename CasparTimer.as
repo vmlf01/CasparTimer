@@ -95,7 +95,7 @@ trace("draw: " + width + " " + height);
 	
 		/******    COMPONENT CUSTOM PROPERTIES    ******/
 
-		[Inspectable(defaultValue="up", type="list", enumeration="up,down")]
+		[Inspectable(name="CountMode", defaultValue="up", type="String")]
 		public function set CountMode(mode:String):void 
 		{
 			_mode = mode.toLowerCase() == COUNT_DOWN ? COUNT_DOWN : COUNT_UP;
@@ -105,7 +105,7 @@ trace("draw: " + width + " " + height);
 			return _mode;
 		}
 		
-		[Inspectable(defaultValue="0")]
+		[Inspectable(name="StartTime", defaultValue="0")]
 		public function set StartTime(milliseconds:Number):void 
 		{
 			_startTime = milliseconds;
@@ -117,6 +117,20 @@ trace("draw: " + width + " " + height);
 		public function get StartTime():Number
 		{
 			return _startTime;
+		}
+		
+		[Inspectable(name="StopTime", defaultValue="0")]
+		public function set StopTime(milliseconds:Number):void 
+		{
+			_stopTime = milliseconds;
+			if (!_isRunning)
+			{
+				Reset();
+			}
+		}
+		public function get StopTime():Number
+		{
+			return _stopTime;
 		}
 		
 		
