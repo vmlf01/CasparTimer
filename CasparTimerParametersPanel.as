@@ -15,19 +15,30 @@
 		private const STOPTIME:String = "fl.getDocumentDOM().selection[0].parameters.StopTime.value";
 		private const FORMAT:String = "fl.getDocumentDOM().selection[0].parameters.Format.value";
 		
+		private var availableFormats:Array = new Array(
+			{data:"hh:mm:ss", label:"hh:mm:ss"}, 
+			{data:"mm:ss", label:"mm:ss"}, 
+			{data:"mm:ss.f", label:"mm:ss.f"}, 
+			{data:"ss.f", label:"ss.f"}, 
+			{data:"custom", label:"custom"}
+		);
+		
 		public function CasparTimerParametersPanel() 
 		{
 			//this.stage.scaleMode = StageScaleMode.NO_SCALE;
-			init();
+			addEventListener(Event.EXIT_FRAME, onReady);
 		}
 
+		private function onReady(e:Event):void
+		{
+			removeEventListener(Event.EXIT_FRAME, onReady);
+			init();
+		}
+			
 		private function init():void 
 		{
 trace("executing init...");
-			// TODO: need to find a better way to initialize 
-			// numericsteppers values
-			this.addEventListener(Event.ACTIVATE, onActivate);
-
+			// setup params change event handlers
 			rbCountUp.addEventListener(Event.CHANGE, onCountModeChanged);
 			rbCountDown.addEventListener(Event.CHANGE, onCountModeChanged);
 			cbFormat.addEventListener(Event.CHANGE, onFormatChanged);
@@ -39,28 +50,18 @@ trace("executing init...");
 			endHH.addEventListener(Event.CHANGE, onEndTimeChanged);
 			endMM.addEventListener(Event.CHANGE, onEndTimeChanged);
 			endSS.addEventListener(Event.CHANGE, onEndTimeChanged);
-
-			var countMode:String = String(MMExecute(COUNTMODE));
 			
-	trace("COUNTING: " + countMode);
+			// set initial param values for selected timer component
+			var countMode:String = String(MMExecute(COUNTMODE));
+trace("COUNTING: " + countMode);
 			rbCountUp.selected = countMode == "up" ? true : false;
 			rbCountDown.selected = countMode == "down" ? true : false;
-			/*
+			
 			var startTime:Number = Number(MMExecute(STARTTIME));
 			var endTime:Number = Number(MMExecute(STOPTIME));
-			
-			startHH.value = startTime / (60 * 60 * 1000);
-			startMM.value = (startTime % (60 * 60 * 1000)) / (60 * 1000);
-			startSS.value = ((startTime % (60 * 60 * 1000)) % (60 * 1000)) / 1000;
-			
-			startTimeText.text = String(startTime);
-			*/
-		}
-		
-		private function onActivate(e:Event):void
-		{
-			var startTime:Number = Number(MMExecute(STARTTIME));
-			var endTime:Number = Number(MMExecute(STOPTIME));
+
+trace("START TIME: " + startTime);
+trace(" STOP TIME: " + endTime);
 			
 			startHH.value = startTime / (60 * 60 * 1000);
 			startMM.value = (startTime % (60 * 60 * 1000)) / (60 * 1000);
@@ -69,19 +70,32 @@ trace("executing init...");
 			endHH.value = endTime / (60 * 60 * 1000);
 			endMM.value = (endTime % (60 * 60 * 1000)) / (60 * 1000);
 			endSS.value = ((endTime % (60 * 60 * 1000)) % (60 * 1000)) / 1000;
-		}
+			
+			var format:String = String(MMExecute(FORMAT));
+			cbFormat.dataProvider = new DataProvider(availableFormats);
+trace("FORMAT: " + format);
 
+			for (var i:Number = 0; i < cbFormat.dataProvider.length; i++) 
+			{
+				if(cbFormat.dataProvider.getItemAt(i).data == format) {
+					cbFormat.selectedIndex = i;
+					break;
+				}
+			}
+		}
+		
+		/* parameters change event handlers */
 		
 		private function onCountModeChanged(e:Event):void
 		{
-			// TODO: fix radio button value change
-trace("NAME: " + e.target.name);
 			if (e.target.selected) 
 			{
 				var countMode:String = (e.target == rbCountDown ? "down" : "up");
 
 				MMExecute(COUNTMODE + ' = "' + countMode + '"');
 trace(COUNTMODE + ' = "' + countMode + '"');
+
+				updateTimerPreview();
 			}
 		}
 		
@@ -94,6 +108,8 @@ trace(COUNTMODE + ' = "' + countMode + '"');
 			// convert time to milliseconds
 			MMExecute(STARTTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000));
 trace(STARTTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000));
+
+			updateTimerPreview();
 		}
 		
 		private function onEndTimeChanged(e:Event):void
@@ -105,6 +121,8 @@ trace(STARTTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + second
 			// convert time to milliseconds
 			MMExecute(STOPTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000));
 trace(STOPTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000));
+
+			updateTimerPreview();
 		}
 		
 		private function onFormatChanged(e:Event):void
@@ -113,20 +131,17 @@ trace(STOPTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds
 			
 			MMExecute(FORMAT + ' = "' + format + '"');
 trace(FORMAT + ' = "' + format + '"');
+
+			updateTimerPreview();
 		}
 		
 		private function updateTimerPreview():void 
 		{
-		/*
-			// update the visibleText value in the component SWF
-			MMExecute('fl.getDocumentDOM().selection[0].parameters.visibleXMLText["value"] = "'+escape(newText)+'";');
-			placeholder_ti.htmlText = newText;
 			var jsfl:String = "";
 			jsfl += "var selectedArray = fl.getDocumentDOM().selection;";
 			jsfl += "fl.getDocumentDOM().selectNone();";
 			jsfl += "fl.getDocumentDOM().selection = selectedArray;";
 			MMExecute(jsfl);
-			*/
 		}
 	}
 }
