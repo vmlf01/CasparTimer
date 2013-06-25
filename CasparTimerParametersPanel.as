@@ -13,6 +13,7 @@
 		private const COUNTMODE:String = "fl.getDocumentDOM().selection[0].parameters.CountMode.value";
 		private const STARTTIME:String = "fl.getDocumentDOM().selection[0].parameters.StartTime.value";
 		private const STOPTIME:String = "fl.getDocumentDOM().selection[0].parameters.StopTime.value";
+		private const FORMAT:String = "fl.getDocumentDOM().selection[0].parameters.Format.value";
 		
 		public function CasparTimerParametersPanel() 
 		{
@@ -108,6 +109,10 @@ trace(STOPTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds
 		
 		private function onFormatChanged(e:Event):void
 		{
+			var format:String = e.target.selectedItem.data;
+			
+			MMExecute(FORMAT + ' = "' + format + '"');
+trace(FORMAT + ' = "' + format + '"');
 		}
 		
 		private function updateTimerPreview():void 
