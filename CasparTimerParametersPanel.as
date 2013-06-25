@@ -7,6 +7,7 @@
 	import fl.controls.ComboBox;
 	import fl.controls.TextInput;
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
 
 	public class CasparTimerParametersPanel extends Sprite 
 	{
@@ -50,6 +51,10 @@ trace("executing init...");
 			endHH.addEventListener(Event.CHANGE, onEndTimeChanged);
 			endMM.addEventListener(Event.CHANGE, onEndTimeChanged);
 			endSS.addEventListener(Event.CHANGE, onEndTimeChanged);
+			
+			btReset.addEventListener(MouseEvent.CLICK, onResetClicked);
+			btStart.addEventListener(MouseEvent.CLICK, onStartClicked);
+			btStop.addEventListener(MouseEvent.CLICK, onStopClicked);
 			
 			// set initial param values for selected timer component
 			var countMode:String = String(MMExecute(COUNTMODE));
@@ -133,6 +138,27 @@ trace(STOPTIME + ' = ' + (hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds
 trace(FORMAT + ' = "' + format + '"');
 
 			updateTimerPreview();
+		}
+		
+		private function onResetClicked(e:MouseEvent):void
+		{
+trace("RESET CLICK");
+			// TODO: call reset on timer component
+			//MMExecute("fl.getDocumentDOM().selection[0].Reset");
+		}
+
+		private function onStartClicked(e:MouseEvent):void
+		{
+trace("START CLICK");
+			// TODO: call start on timer component
+			//MMExecute("fl.getDocumentDOM().selection[0].Start");
+		}
+
+		private function onStopClicked(e:MouseEvent):void
+		{
+trace("STOP CLICK");
+			// TODO: call stop on timer component
+			//MMExecute("fl.getDocumentDOM().selection[0].Stop");
 		}
 		
 		private function updateTimerPreview():void 
