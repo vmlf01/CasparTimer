@@ -168,17 +168,21 @@ trace("draw: " + width + " " + height);
 			return _mode;
 		}
 		
-		[Inspectable(name="FormatProvider", defaultValue="", type="ITimerDisplayFormat")]
-		public function set FormatProvider(fp:ITimerDisplayFormat):void 
+		[Inspectable(name="FormatProvider", defaultValue="", type="Object")]
+		public function set FormatProvider(fp:Object):void 
 		{
-			_formatProvider = fp;
-			if (!_isRunning)
+			var formatProv:ITimerDisplayFormat = fp as ITimerDisplayFormat;
+			if (formatProv != null)
 			{
-				Reset();
+				_formatProvider = formatProv;
+				if (!_isRunning)
+				{
+					Reset();
+				}
 			}
 		}
 		
-		public function get FormatProvider():ITimerDisplayFormat
+		public function get FormatProvider():Object
 		{
 			return _formatProvider;
 		}
@@ -187,6 +191,7 @@ trace("draw: " + width + " " + height);
 		
 		public function Start():void 
 		{
+trace("START CALLED");			
 			_timekeeper.startTicking();
 			_isRunning = true;
 		}
@@ -198,6 +203,7 @@ trace("draw: " + width + " " + height);
 		
 		public function Reset():void 
 		{
+trace("RESET CALLED");			
 			_timekeeper.stopTicking();
 			_timekeeper.setValue(_startTime);
 			_isRunning = false;
