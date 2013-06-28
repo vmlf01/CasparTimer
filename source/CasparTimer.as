@@ -6,6 +6,7 @@
 	import flash.system.Capabilities;
 	import flash.text.Font;
 	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import org.computus.model.*;
 	import se.svt.caspar.template.components.ICasparComponent;
 	
@@ -15,6 +16,7 @@
 		public static const COUNT_DOWN:String = "down";
 		
 		private var _displayField:TimerDisplay;
+		private var _textFormat:TextFormat;
 		private var _timekeeper:Timekeeper;
 		
 		private var _startTime:Number;
@@ -35,6 +37,18 @@ trace("CasparTimer");
 			_format = "mm:ss";
 			_formatProvider = new TimerDisplayFormat_mmss();
 			
+			_textFormat = new TextFormat();
+			_textFormat.font = "Arial";
+			_textFormat.color = 0x000000;
+			_textFormat.size = 12;
+			_textFormat.align = "left";
+			_textFormat.bold = false;
+			_textFormat.italic = false;
+			
+			_displayField.DisplayTextFormat = _textFormat;
+			
+			updateTimeDisplay(this.StartTime);
+
 			_timekeeper = new Timekeeper();
 			_timekeeper.setValue(0);
 			_timekeeper.setTickDuration(50);
@@ -75,7 +89,12 @@ trace("draw: " + width + " " + height);
 		
 		protected function onTick(param1:TimekeeperEvent) : void
 		{
-			if ((_mode == COUNT_UP && _stopTime > 0 && param1.time >= _stopTime) || (_mode == COUNT_DOWN && param1.time <= _stopTime))
+			updateTimeDisplay(param1.time);
+		}			
+		
+		private function updateTimeDisplay(t:Number)
+		{
+			if ((_mode == COUNT_UP && _stopTime > 0 && t >= _stopTime) || (_mode == COUNT_DOWN && t <= _stopTime))
 			{
 				// we have reached stop time, so stop the timer
 				_timekeeper.stopTicking();
@@ -84,9 +103,9 @@ trace("draw: " + width + " " + height);
 			}
 			else
 			{
-				_displayField.UpdateTimerDisplay(_formatProvider.formatTime(param1.time));
+				_displayField.UpdateTimerDisplay(_formatProvider.formatTime(t));
 			}
-		}			
+		}
 		
 		/******    COMPONENT CUSTOM PROPERTIES    ******/
 
@@ -186,6 +205,77 @@ trace("draw: " + width + " " + height);
 		{
 			return _formatProvider;
 		}
+		
+		// text format options
+		[Inspectable(name = "Font", type="Font Name", defaultValue="Arial")]
+		public function set Font(font:String):void
+		{
+			_textFormat.font = font;
+			_displayField.DisplayTextFormat = _textFormat;
+		}
+		public function get Font():String
+		{
+			return _textFormat.font;
+		}
+
+		[Inspectable(name = "TextColor", type="Color", defaultValue="0x000000")]
+		public function set TextColor(c:int):void
+		{
+			_textFormat.color = c;
+			_displayField.DisplayTextFormat = _textFormat;
+		}
+		public function get TextColor():int
+		{
+			return int(_textFormat.color);
+		}
+		
+		[Inspectable(name = "Size", type="Number", defaultValue=12)]
+		public function set Size(s:Number):void
+		{
+			_textFormat.size = s;
+			_displayField.DisplayTextFormat = _textFormat;
+		}
+		public function get Size():Number
+		{
+			return Number(_textFormat.size);
+		}
+
+		[Inspectable(name = "Align", type="String", enumeration="left, center, right", defaultValue="left")]
+		public function set Align(a:String):void
+		{
+			_textFormat.align = a;
+			_displayField.DisplayTextFormat = _textFormat;
+		}
+		public function get Align():String
+		{
+			return _textFormat.align;
+		}
+
+		[Inspectable(name = "Bold", type="Boolean", defaultValue=false)]
+		public function set Bold(b:Boolean):void
+		{
+			_textFormat.bold = b;
+			_displayField.DisplayTextFormat = _textFormat;
+		}
+		public function get Bold():Boolean
+		{
+			return _textFormat.bold;
+		}
+		
+		[Inspectable(name = "Italic", type="Boolean", defaultValue=false)]
+		public function set Italic(i:Boolean):void
+		{
+			_textFormat.italic = i;
+			_displayField.DisplayTextFormat = _textFormat;
+		}
+		public function get Italic():Boolean
+		{
+			return _textFormat.italic;
+		}		
+
+		
+		
+		
 		
 		/******    COMPONENT PUBLIC METHODS    ******/
 		
