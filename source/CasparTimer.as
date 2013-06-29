@@ -109,7 +109,7 @@ trace("draw: " + width + " " + height);
 		
 		/******    COMPONENT CUSTOM PROPERTIES    ******/
 
-		[Inspectable(name="CountMode", defaultValue="up", type="String")]
+		[Inspectable(name="CountMode", defaultValue="up", enumeration="up,down", type="String")]
 		public function set CountMode(mode:String):void 
 		{
 			_mode = mode.toLowerCase() == COUNT_DOWN ? COUNT_DOWN : COUNT_UP;
@@ -187,13 +187,11 @@ trace("draw: " + width + " " + height);
 			return _mode;
 		}
 		
-		[Inspectable(name="FormatProvider", defaultValue="", type="Object")]
-		public function set FormatProvider(fp:Object):void 
+		public function set FormatProvider(fp:ITimerDisplayFormat):void 
 		{
-			var formatProv:ITimerDisplayFormat = fp as ITimerDisplayFormat;
-			if (formatProv != null)
+			if (fp != null)
 			{
-				_formatProvider = formatProv;
+				_formatProvider = fp;
 				if (!_isRunning)
 				{
 					Reset();
@@ -201,7 +199,7 @@ trace("draw: " + width + " " + height);
 			}
 		}
 		
-		public function get FormatProvider():Object
+		public function get FormatProvider():ITimerDisplayFormat
 		{
 			return _formatProvider;
 		}
@@ -223,6 +221,7 @@ trace("draw: " + width + " " + height);
 		{
 			_textFormat.color = c;
 			_displayField.DisplayTextFormat = _textFormat;
+			updateTimeDisplay(this.StartTime);
 		}
 		public function get TextColor():int
 		{
@@ -281,7 +280,7 @@ trace("draw: " + width + " " + height);
 		
 		public function Start():void 
 		{
-trace("START CALLED");			
+trace("START CALLED");
 			_timekeeper.startTicking();
 			_isRunning = true;
 		}
