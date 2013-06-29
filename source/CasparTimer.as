@@ -89,7 +89,14 @@ trace("draw: " + width + " " + height);
 		
 		protected function onTick(param1:TimekeeperEvent) : void
 		{
-			updateTimeDisplay(param1.time);
+			var t:Number = param1.time;
+			if (_mode == COUNT_DOWN)
+			{
+				// subtract elapsed time from start time if we are counting down
+				t = _startTime - t;
+			}
+			
+			updateTimeDisplay(t);
 		}			
 		
 		private function updateTimeDisplay(t:Number)
@@ -290,6 +297,12 @@ trace("START CALLED");
 			_timekeeper.stopTicking();
 		}
 		
+		public function SetTime(milliseconds:Number):void 
+		{
+			_timekeeper.setValue(milliseconds);
+			updateTimeDisplay(milliseconds);
+		}
+		
 		public function Reset():void 
 		{
 trace("RESET CALLED");			
@@ -297,32 +310,91 @@ trace("RESET CALLED");
 			_timekeeper.setValue(_startTime);
 			_isRunning = false;
 			
-			_displayField.UpdateTimerDisplay(_formatProvider.formatTime(_startTime));
+			updateTimeDisplay(this.StartTime);
 		}
 
 		
 		/* INTERFACE se.svt.caspar.template.components.ICasparComponent */
-		
-		//<component name='CasparTimer'><property name='text' type='string' info='URL to the image to load (.png, .jpg, .gif)' /><property name='x' type='number' info='X position offset' /><property name='y' type='number' info='Y position offset' /><property name='scale' type='number' info='The scale of the image (in percent)' /><property name='mirrorX' type='boolean' info='If true the image is mirrored in the x axis' /><property name='mirrorY' type='boolean' info='If true the image is mirrored in the y axis' /><property name='opacity' type='number' info='The opacity of the image (in percent)' /><property name='rotation' type='number' info='The rotation of the image (in degrees)' /><property name='bitmap' type='string' info='URL to the image to load (.png, .jpg, .gif)' /><property name='bitmapBytes' type='base64' info='Base64 representation of the image to load (.png, .jpg, .gif)' /></component>
 		
 		[Inspectable(name='description', defaultValue='<component name="CasparTimer"><property name="text" type="string" info="Commands for controlling the timer separated by ;" /></component>')]
 		public var description;
 		
 		public function SetData(xmlData:XML):void 
 		{ 
-			for each (var element:XML in xmlData.children())
+			try
 			{
-				switch(element.@id)
+				for each (var element:XML in xmlData.children())
 				{
-					case "text":
-						if (element.@value == "START")
-						{
-							Start();
-						}
-						break;
+					switch(element.@id.toLowerCase())
+					{
+						case "text":
+							var commandTokens:Array = element.@value.toLowerCase().split(" ");
+							ProcessTimerCommands(commandTokens);
+							break;
+					}
 				}
-			}			
+			}
+			catch (e:Error)
+			{
+				throw new Error("CasparTimer error in SetData: " + e.message);
+			}
 		}
+		
+		private function ProcessTimerCommands(commandTokens:Array):void
+		{
+			for (var i:int = 0; i < commandTokens.length; i++)
+			{
+				if (startsWith(commandTokens[i], "set"))
+				{
+					this.SetTime(Number(commandTokens[i].substring(3)));
+				}
+				else if (startsWith(commandTokens[i], "begin"))
+				{
+					this.StartTime = Number(commandTokens[i].substring(4));
+				}
+				else if (startsWith(commandTokens[i], "end"))
+				{
+					this.StopTime = Number(commandTokens[i].substring(3));
+				}
+				else
+				{
+					switch(commandTokens[i])
+					{
+						case "countup":
+							this.CountMode = "up";
+							break;
+							
+						case "countdown":
+							this.CountMode = "down";
+							break;
+	
+						case "countup":
+							this.CountMode = "up";
+							break;
+							
+						case "start":
+							Start();
+							break;
+							
+						case "stop":
+							Stop();
+							break;
+							
+						case "reset":
+							Reset();
+							break;
+					}
+				}
+			}
+		}
+		
+		private function startsWith(string:String, pattern:String):Boolean
+		{
+			string  = string.toLowerCase();
+			pattern = pattern.toLowerCase();
+					 
+			return pattern == string.substr( 0, pattern.length );
+		}		
 		
 		public function dispose():void
 		{
