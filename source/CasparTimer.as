@@ -368,10 +368,6 @@ trace("RESET CALLED");
 							this.CountMode = "down";
 							break;
 	
-						case "countup":
-							this.CountMode = "up";
-							break;
-							
 						case "start":
 							Start();
 							break;
